@@ -1,0 +1,11 @@
+{
+  "name": "qandapi",
+  "version": "1.0.0",
+  "description": "Questions and Answers API",
+  "main": "index.js",
+  "scripts": {
+  },
+
+  "author": "Derek Mason",
+  "license": "ISC"
+ }

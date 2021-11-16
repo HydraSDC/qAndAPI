@@ -1,2 +1,1 @@
-# qAndAPI
-Questions and Answers API
+# Questions and Answers API
