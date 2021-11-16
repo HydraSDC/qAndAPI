@@ -1,0 +1,45 @@
+{
+  "products": [
+    {
+      "product_id": "INT",
+      "results": [
+        {
+          "question_id": "INT",
+          "question_body": "STRING",
+          "question_date": "DATE",
+          "asker_name": "STRING",
+          "question_helpfulness": "INT",
+          "reported": "BOOLEAN",
+          "answers": [
+            {
+              "answer_id": "INT",
+              "body": "STRING",
+              "date": "DATE",
+              "answerer_name": "STRING",
+              "helpfulness": "INT",
+              "reported": "BOOLEAN",
+              "photos": [
+                {
+                  "photo_id": "INT",
+                  "url": "STRING"
+                }
+                ,
+                {
+                  "ADDITIONAL PHOTOS": "WILL GO HERE"
+                }
+              ]},
+            {
+              "ADDITIONAL ANSWERS": "WILL GO HERE"
+               }
+          ]
+
+
+        },
+        {
+          "MORE QUESTIONS": "WILL GO HERE"
+        }
+      ]},
+    {
+      "MORE PRODUCTS": "WILL GO HERE"
+    }
+  ]}
