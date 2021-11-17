@@ -1,2 +1,7 @@
 dist
 node_modules
+.DS_Store
+answers.csv
+answers_photos.csv
+product.csv
+questions.csv
