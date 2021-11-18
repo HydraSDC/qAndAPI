@@ -2,13 +2,19 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 
+mongoose.Promise = global.Promise;
+
+const bodyParser = require('body-parser');
+
 const Router = require('./routes.js');
 
-// const { API_URL, API_KEY } = require('./config.js');
+const Questions = require('../models/QuestionSchema.js');
 
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
 
 mongoose.connect('mongodb://localhost:27017/sdc',{
   useNewUrlParser:true
@@ -27,3 +33,5 @@ app.use(Router);
 app.listen(3333, () => {
   console.log('Connected to the island...')
 });
+
+exports.db = db

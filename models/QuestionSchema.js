@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const QuestionSchema = new mongoose.Schema(
   {
-    _id: ObjectID(),
+    _id: Object,
     id: Number,
     body: String,
     date_written: Date,
