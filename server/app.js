@@ -1,20 +1,10 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
-
-mongoose.Promise = global.Promise;
-
-const bodyParser = require('body-parser');
-
 const Router = require('./routes.js');
-
-const Questions = require('../models/QuestionSchema.js');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(bodyParser.json());
+app.use(express.json());
 
 mongoose.connect('mongodb://localhost:27017/sdc',{
   useNewUrlParser:true
