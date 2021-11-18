@@ -20,22 +20,8 @@ app.get("/qa/questions", async (req, res) => {
 
 app.post("/qa/questions", async (req, res) => {
 
-  // let newQ = {
-  //   {$inc: {id:1}}
-  //   product_id: Number(req.body.product_id),
-  //   body: req.body.body,
-  //   date_written: Date(),
-  //   asker_name: req.body.name,
-  //   asker_email: req.body.email,
-  //   reported: 0,
-  //   helpful: 0,
-  // }
-  // console.log(newQ);
-  const sdc = connection.db;
-  sdc
-  .collection("questions")
-  .insertOne({
-    id: Math.floor(Math.random() * (Number(req.body.product_id))),
+  let newQ = {
+    id: Math.floor(Math.random() * 1000 + (Number(req.body.product_id))),
     product_id: Number(req.body.product_id),
     body: req.body.body,
     date_written: Date(),
@@ -43,7 +29,12 @@ app.post("/qa/questions", async (req, res) => {
     asker_email: req.body.email,
     reported: 0,
     helpful: 0,
-  }, function (err, result) {
+  }
+  // console.log(newQ);
+  const sdc = connection.db;
+  sdc
+  .collection("questions")
+  .insertOne(newQ, function (err, result) {
     if (err) {
       res.status(400).send("Error adding question!");
     } else {
