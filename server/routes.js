@@ -21,12 +21,11 @@ db.once("open", function () {
 
 app.get("/qa/questions", async (req, res) => {
   let productID = Number(req.query.productId);
-  db.questions.find({product_id})
-  connection.db
-  .collection('questions')
-  .find({
-    product_id: productID
-  }).limit(10)
+  const database = db;
+  const questions = database.collection("questions");
+
+  questions
+  .find({}).limit(5)
   .toArray((err, data) => {
     if (err) {res.status(400).send("Error fetching Q's")}
     else { res.json(data) }
@@ -37,10 +36,13 @@ app.post("/qa/questions", async (req, res) => {
 
  const database = db;
  const questions = database.collection("questions");
+ const ids = database.collection("ids");
 
   // const test = await questions.countDocuments()
-  const count = await questions.estimatedDocumentCount()
-
+  const currentIds = await ids.findOne();
+  const count = currentIds.questionID;
+  let filter = { "questioID": count};
+  let newDoc = { $set: { questionID: (count + 1)} };
 
   let newQ = {
     id: count + 1,
@@ -53,16 +55,21 @@ app.post("/qa/questions", async (req, res) => {
     helpful: 0,
   }
 
+  const update = await ids.updateOne({},newDoc);
+
+  console.log(`${update.modifiedCount} file updated...`)
+
   questions
   .insertOne(newQ, function (err, result) {
     if (err) {
       res.status(400).send("Error adding question!");
     } else {
-      console.log(result);
       console.log(`Added a new question with id ${result.insertedId}`);
       res.status(204).send();
     }
   });
+
+
 })
 
 // ANSWERS
