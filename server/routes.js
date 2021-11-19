@@ -17,7 +17,9 @@ db.once("open", function () {
 });
 
 
-// QUESTIONS
+/*
+ * * * * * * * * * * QUESTIONS * * * * * * * * * *
+*/
 
 app.get("/qa/questions", async (req, res) => {
   let productID = Number(req.query.productId);
@@ -34,11 +36,9 @@ app.get("/qa/questions", async (req, res) => {
 
 app.post("/qa/questions", async (req, res) => {
 
- const database = db;
- const questions = database.collection("questions");
- const ids = database.collection("ids");
-
-  // const test = await questions.countDocuments()
+  const database = db;
+  const questions = database.collection("questions");
+  const ids = database.collection("ids");
   const currentIds = await ids.findOne();
   const count = currentIds.questionID;
   let filter = { "questionID": count};
@@ -55,9 +55,8 @@ app.post("/qa/questions", async (req, res) => {
     helpful: 0,
   }
 
-  const update = await ids.updateOne(filter, newDoc);
-
-  console.log(`${update.modifiedCount} file updated...`)
+  await ids.updateOne(filter, newDoc);
+  console.log(`ID file updated...`)
 
   questions
   .insertOne(newQ, function (err, result) {
@@ -72,10 +71,13 @@ app.post("/qa/questions", async (req, res) => {
 
 })
 
-// ANSWERS
+/*
+ * * * * * * * * * * ANSWERS * * * * * * * * * *
+*/
 
 app.get("/qa/answers", async (req, res) => {
-  connection.db
+  const database = db;
+  database
   .collection('answers')
   .find({}).limit(10)
   .toArray((err, data) => {
@@ -87,7 +89,8 @@ app.get("/qa/answers", async (req, res) => {
 })
 
 app.get("/qa/answerPhotos", async (req, res) => {
-  connection.db
+  const database = db;
+  database
   .collection('answerPhotos')
   .find({}).limit(10)
   .toArray((err, data) => {
@@ -99,10 +102,13 @@ app.get("/qa/answerPhotos", async (req, res) => {
 })
 
 
-// PRODUCTS
+/*
+ * * * * * * * * * * PRODUCTS * * * * * * * * * *
+*/
 
 app.get("/products", async (req, res) => {
-  connection.db
+  const database = db;
+  database
   .collection('products')
   .find({}).limit(10)
   .toArray((err, data) => {
