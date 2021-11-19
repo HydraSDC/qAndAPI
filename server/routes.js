@@ -41,7 +41,7 @@ app.post("/qa/questions", async (req, res) => {
   // const test = await questions.countDocuments()
   const currentIds = await ids.findOne();
   const count = currentIds.questionID;
-  let filter = { "questioID": count};
+  let filter = { "questionID": count};
   let newDoc = { $set: { questionID: (count + 1)} };
 
   let newQ = {
@@ -55,7 +55,7 @@ app.post("/qa/questions", async (req, res) => {
     helpful: 0,
   }
 
-  const update = await ids.updateOne({},newDoc);
+  const update = await ids.updateOne(filter, newDoc);
 
   console.log(`${update.modifiedCount} file updated...`)
 
