@@ -1,12 +1,27 @@
 const express = require("express");
 const connection = require("./app.js");
+const mongoose = require('mongoose');
 
 const app = express();
+
+mongoose.connect('mongodb://localhost:27017/sdc',{
+  useNewUrlParser:true
+});
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "connection error: "));
+
+db.once("open", function () {
+  console.log("Connected to the db...");
+});
+
 
 // QUESTIONS
 
 app.get("/qa/questions", async (req, res) => {
   let productID = Number(req.query.productId);
+  db.questions.find({product_id})
   connection.db
   .collection('questions')
   .find({
@@ -20,8 +35,15 @@ app.get("/qa/questions", async (req, res) => {
 
 app.post("/qa/questions", async (req, res) => {
 
+ const database = db;
+ const questions = database.collection("questions");
+
+  // const test = await questions.countDocuments()
+  const count = await questions.estimatedDocumentCount()
+
+
   let newQ = {
-    id: Math.floor(Math.random() * 1000 + (Number(req.body.product_id))),
+    id: count + 1,
     product_id: Number(req.body.product_id),
     body: req.body.body,
     date_written: Date(),
@@ -30,10 +52,8 @@ app.post("/qa/questions", async (req, res) => {
     reported: 0,
     helpful: 0,
   }
-  // console.log(newQ);
-  const sdc = connection.db;
-  sdc
-  .collection("questions")
+
+  questions
   .insertOne(newQ, function (err, result) {
     if (err) {
       res.status(400).send("Error adding question!");
