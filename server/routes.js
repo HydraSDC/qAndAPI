@@ -88,6 +88,11 @@ app.get("/qa/answers", async (req, res) => {
   })
 })
 
+/*
+ * * * * * * * * * * ANSWER PHOTOS * * * * * * * * * *
+*/
+
+
 app.get("/qa/answerPhotos", async (req, res) => {
   const database = db;
   database
