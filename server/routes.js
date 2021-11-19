@@ -67,7 +67,19 @@ app.post("/qa/questions", async (req, res) => {
       res.status(204).send();
     }
   });
+})
 
+app.put("/qa/questions/helpful", async (req, res) => {
+  const database = db;
+  const questions = database.collection("questions");
+
+  let qID = Number(req.query.questionID);
+  let markHelpful = { $inc: { helpful: 1 } }
+  let query = {id: qID}
+
+  await questions.updateOne(query, markHelpful);
+  console.log(`q file updated...`)
+  res.status(204).send();
 
 })
 
