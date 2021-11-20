@@ -140,11 +140,12 @@ app.get("/qa/answerPhotos", async (req, res) => {
 */
 
 app.get("/products", async (req, res) => {
-
+  let limit = 5;
+  if (req.query.count) {limit = Number(req.query.count)}
   const database = db;
   database
   .collection('products')
-  .find({}).limit(10)
+  .find({}).limit(limit)
   .toArray((err, data) => {
     if (err) {res.status(400).send("Error fetching Q's")}
     else {
