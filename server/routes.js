@@ -115,6 +115,27 @@ app.get("/qa/answers", async (req, res) => {
   })
 })
 
+app.post("/qa/answers", async (req, res) => {
+  const qID = Number(req.query.questionID);
+  const database = db;
+  const answers = database.collection('answers');
+  const ids = await database.collection('ids').findOne();
+  const count = ids.answerID;
+
+  const newAnswer = {
+    id: count + 1,
+    question_id: qID,
+    body: req.body.body,
+    date_written: new Date(),
+    answerer_name: req.body.name,
+    answerer_email: req.body.email,
+    reported: 0,
+    helpful: 0
+  }
+
+  console.log(newAnswer);
+})
+
 /*
  * * * * * * * * * * ANSWER PHOTOS * * * * * * * * * *
 */
