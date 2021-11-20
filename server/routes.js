@@ -80,6 +80,17 @@ app.put("/qa/questions/helpful", async (req, res) => {
   res.status(204).send();
 })
 
+app.put("/qa/questions/report", async (req, res) => {
+  let qID = Number(req.query.questionID);
+  const database = db;
+  const questions = database.collection("questions");
+  let reportQ = { $set: { reported: 1 } }
+  let query = {id: qID}
+  await questions.updateOne(query, reportQ);
+  console.log(`Question reported...`)
+  res.status(204).send();
+})
+
 /*
  * * * * * * * * * * ANSWERS * * * * * * * * * *
 */
