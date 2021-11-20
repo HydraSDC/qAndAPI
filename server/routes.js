@@ -115,6 +115,60 @@ app.get("/qa/answers", async (req, res) => {
   })
 })
 
+app.post("/qa/answers", async (req, res) => {
+  const qID = Number(req.query.questionID);
+  const database = db;
+  const answers = database.collection('answers');
+  const ids = await database.collection('ids').findOne();
+  const count = ids.answerID;
+
+  const newAnswer = {
+    id: count + 1,
+    question_id: qID,
+    body: req.body.body,
+    date_written: new Date(),
+    answerer_name: req.body.name,
+    answerer_email: req.body.email,
+    reported: 0,
+    helpful: 0
+  }
+
+  await database.collection('ids').updateOne({answerID: count}, { $set: {answerID: count +1}});
+
+  answers
+  .insertOne(newAnswer, (err, result) => {
+    if (err) {
+      res.status(400).send("Error adding answer!");
+    } else {
+      console.log(`Added a new answer with id ${result.insertedId}`);
+      res.status(204).send();
+    }
+  });
+})
+
+app.put("/qa/answers/helpful", async (req, res) => {
+  let aID = Number(req.query.answerID);
+  // connect to database
+  const database = db;
+  const answers = database.collection("answers");
+  // Update helpful field of answer matching ID from request params
+  await answers.updateOne({id: aID}, { $inc: { helpful: 1 } });
+  console.log(`File updated...`)
+  res.status(204).send();
+})
+
+app.put("/qa/answers/report", async (req, res) => {
+  let aID = Number(req.query.answerID);
+  // connect to database
+  const database = db;
+  const answers = database.collection("answers");
+  // Update helpful field of answer matching ID from request params
+  await answers.updateOne({id: aID}, { $set: { reported: 1 } });
+  console.log(`File updated...`)
+  res.status(204).send();
+})
+
+
 /*
  * * * * * * * * * * ANSWER PHOTOS * * * * * * * * * *
 */
