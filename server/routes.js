@@ -146,7 +146,7 @@ app.get("/products", async (req, res) => {
   .toArray((err, data) => {
     if (err) {res.status(400).send("Error fetching Q's")}
     else {
-      res.json(data)
+      res.json(data.map((item) => {item}))
     }
   })
 })
