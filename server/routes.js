@@ -12,7 +12,7 @@ const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "connection error: "));
 
-db.once("open", function () {
+db.once("open", () => {
   console.log("Connected to the db...");
 });
 
@@ -35,15 +35,16 @@ app.get("/qa/questions", async (req, res) => {
 })
 
 app.post("/qa/questions", async (req, res) => {
-
+  // Connect to MongoDB
   const database = db;
   const questions = database.collection("questions");
   const ids = database.collection("ids");
   const currentIds = await ids.findOne();
+  // Set vars used for queries
   const count = currentIds.questionID;
   let filter = { "questionID": count};
   let newDoc = { $set: { questionID: (count + 1)} };
-
+  // Object to insert
   let newQ = {
     id: count + 1,
     product_id: Number(req.body.product_id),
@@ -54,12 +55,12 @@ app.post("/qa/questions", async (req, res) => {
     reported: 0,
     helpful: 0,
   }
-
+  // Increment ids table
   await ids.updateOne(filter, newDoc);
   console.log(`ID file updated...`)
-
+  // Insert request into MongoDB
   questions
-  .insertOne(newQ, function (err, result) {
+  .insertOne(newQ, (err, result) => {
     if (err) {
       res.status(400).send("Error adding question!");
     } else {
@@ -70,13 +71,19 @@ app.post("/qa/questions", async (req, res) => {
 })
 
 app.put("/qa/questions/helpful", async (req, res) => {
+  // store ID from request params
   let qID = Number(req.query.questionID);
+  // connect to database
   const database = db;
   const questions = database.collection("questions");
+  // Define query vars
   let markHelpful = { $inc: { helpful: 1 } }
   let query = {id: qID}
+  // Update helpful field of question matching ID from request params
   await questions.updateOne(query, markHelpful);
   console.log(`File updated...`)
+  // Send 204 according to Learn :
+  // https://learn-2.galvanize.com/cohorts/2960/blocks/94/content_files/Front%20End%20Capstone/project-atelier-catwalk/qa.md
   res.status(204).send();
 })
 
