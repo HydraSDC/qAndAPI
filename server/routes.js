@@ -144,8 +144,17 @@ app.post("/qa/answers", async (req, res) => {
       res.status(204).send();
     }
   });
+})
 
-
+app.put("/qa/answers/helpful", async (req, res) => {
+  let aID = Number(req.query.answerID);
+  // connect to database
+  const database = db;
+  const answers = database.collection("answers");
+  // Update helpful field of answer matching ID from request params
+  await answers.updateOne({id: aID}, { $inc: { helpful: 1 } });
+  console.log(`File updated...`)
+  res.status(204).send();
 })
 
 /*
