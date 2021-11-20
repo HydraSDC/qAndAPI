@@ -133,7 +133,19 @@ app.post("/qa/answers", async (req, res) => {
     helpful: 0
   }
 
-  console.log(newAnswer);
+  await database.collection('ids').updateOne({answerID: count}, { $set: {answerID: count +1}});
+
+  answers
+  .insertOne(newAnswer, (err, result) => {
+    if (err) {
+      res.status(400).send("Error adding answer!");
+    } else {
+      console.log(`Added a new answer with id ${result.insertedId}`);
+      res.status(204).send();
+    }
+  });
+
+
 })
 
 /*
