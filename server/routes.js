@@ -2,36 +2,54 @@ const express = require("express");
 const connection = require("./app.js");
 const mongoose = require('mongoose');
 const { produceWithPatches } = require("immer");
+const db = require('../db/index.js');
 
 const app = express();
-
-mongoose.connect('mongodb://localhost:27017/sdc',{
-  useNewUrlParser:true
-});
-
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error: "));
-
-db.once("open", () => {
-  console.log("Connected to the db...");
-});
-
 
 /*
  * * * * * * * * * * QUESTIONS * * * * * * * * * *
 */
 
 app.get("/qa/questions", async (req, res) => {
-  let productID = Number(req.query.productId);
+  //get needed variables from params
+  let product = {};
+  let limit = 5;
+  if (req.query.product_id){ product = { product_id: Number(req.query.product_id) }}
+  if (req.query.count){limit = Number(req.query.count)}
+  //connect to database
   const database = db;
   const questions = database.collection("questions");
 
+  const getAnswers = async (questionID) => {
+    const results = await database.collection('answers').find({question_id: Number(questionID)});
+    return results;
+  }
   questions
-  .find({}).limit(5)
+  .find(product).limit(limit)
   .toArray((err, data) => {
     if (err) {res.status(400).send("Error fetching Q's")}
-    else { res.json(data) }
+    else {
+
+      const questionAPI = data.map(question => {
+
+        let isReported = false;
+        let answersArray = JSON.stringify(getAnswers(question.id));
+        if (question.reported === '1'){ isReported = true }
+
+
+
+        return {
+          question_id: question.id,
+          question_body: question.body,
+          question_date: question.date_written,
+          asker_name: question.asker_name,
+          question_helpfulness: question.helpful,
+          reported: isReported,
+          answers: answersArray
+        }
+      })
+      res.status(333).send(questionAPI);
+     }
   })
 })
 
