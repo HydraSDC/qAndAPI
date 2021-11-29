@@ -16,34 +16,31 @@ app.get("/qa/questions", async (req, res) => {
   const productQs = await db.collection('questions').find({product_id: Number(product)}).limit(count).toArray();
   const answers = await db.collection('answers').find({}).limit(count).toArray();
 
-  const mappedQs = productQs.map((q) => {
-
-    let answersObj = {};
-    answers.forEach(answer => {
-
-        let aID = answer.id;
-        answersObj[aID] = {}
-        answersObj[aID].id = answer.id,
-        answersObj[aID].body = answer.body,
-        answersObj[aID].date = answer.date_written,
-        answersObj[aID].answerer_name = answer.answerer_name,
-        answersObj[aID].helpfulness = answer.helpful,
-        answersObj[aID].photos = []
-
-    })
+  const mappedQs = productQs.map((question) => {
 
     let report = false;
-    if (q.reported === '1'){report = true};
+    if (question.reported === '1'){report = true};
+
+    const answersObject = {};
+    answers.forEach((answer) => {
+    let aID = answer.id;
+        answersObject[aID] = {}
+        answersObject[aID].id = answer.id,
+        answersObject[aID].body = answer.body,
+        answersObject[aID].date = answer.date_written,
+        answersObject[aID].answerer_name = answer.answerer_name,
+        answersObject[aID].helpfulness = answer.helpful,
+        answersObject[aID].photos = []
+    })
 
     let result = {}
-
-      result.question_id = q.id,
-      result.question_body = q.body,
-      result.question_date = q.date_written,
-      result.asker_name = q.asker_name,
-      result.question_helpfulness = q.helpful,
-      result.reported = report,
-      result.answers = answersObj
+      result.question_id = question.id;
+      result.question_body = question.body;
+      result.question_date = question.date_written;
+      result.asker_name = question.asker_name;
+      result.question_helpfulness = question.helpful;
+      result.reported = report;
+      result.answers = answersObject;
 
     return result;
   })
@@ -129,6 +126,7 @@ app.get("/qa/answers", async (req, res) => {
   const answerArray = await database.collection('answers').find({question_id: question}).limit(count).toArray();
 
   const mappedAnswers = answerArray.map((a) => {
+    if (a.reported !== '1'){
     let result = {}
     result.answer_id = a.id;
     result.body = a.body;
@@ -137,6 +135,7 @@ app.get("/qa/answers", async (req, res) => {
     result.helpfulness = a.helpful;
     result.photos = [];
     return result;
+    }
   })
 
   res.status(200).send({
