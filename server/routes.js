@@ -11,46 +11,7 @@ const app = express();
 */
 
 app.get("/qa/questions", async (req, res) => {
-  //get needed variables from params
-  let product = {};
-  let limit = 5;
-  if (req.query.product_id){ product = { product_id: Number(req.query.product_id) }}
-  if (req.query.count){limit = Number(req.query.count)}
-  //connect to database
-  const database = db;
-  const questions = database.collection("questions");
 
-  const getAnswers = async (questionID) => {
-    const results = await database.collection('answers').find({question_id: Number(questionID)});
-    return results;
-  }
-  questions
-  .find(product).limit(limit)
-  .toArray((err, data) => {
-    if (err) {res.status(400).send("Error fetching Q's")}
-    else {
-
-      const questionAPI = data.map(question => {
-
-        let isReported = false;
-        let answersArray = JSON.stringify(getAnswers(question.id));
-        if (question.reported === '1'){ isReported = true }
-
-
-
-        return {
-          question_id: question.id,
-          question_body: question.body,
-          question_date: question.date_written,
-          asker_name: question.asker_name,
-          question_helpfulness: question.helpful,
-          reported: isReported,
-          answers: answersArray
-        }
-      })
-      res.status(333).send(questionAPI);
-     }
-  })
 })
 
 app.post("/qa/questions", async (req, res) => {
@@ -120,18 +81,31 @@ app.put("/qa/questions/report", async (req, res) => {
 /*
  * * * * * * * * * * ANSWERS * * * * * * * * * *
 */
-
 app.get("/qa/answers", async (req, res) => {
   const database = db;
-  database
-  .collection('answers')
-  .find({}).limit(10)
-  .toArray((err, data) => {
-    if (err) {res.status(400).send("Error fetching Q's")}
-    else {
-      res.json(data)
-    }
+  let count = 5;
+
+  let question = Number(req.query.question_id);
+
+  const answerArray = await database.collection('answers').find({question_id: question}).limit(count).toArray();
+  const mapped = answerArray.map((a) => {
+    let result = {}
+    result.answer_id = a.id;
+    result.body = a.body;
+    result.date = a.date_written;
+    result.answerer_name = a.answerer_name;
+    result.helpfulness = a.helpful;
+    result.photos = [];
+    return result;
   })
+
+  res.status(200).send({
+    question: question,
+    page: 0,
+    count: count,
+    results: mapped
+  })
+
 })
 
 /*
