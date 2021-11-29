@@ -1,7 +1,6 @@
 const express = require("express");
 const connection = require("./app.js");
 const mongoose = require('mongoose');
-const { produceWithPatches } = require("immer");
 const db = require('../db/index.js');
 
 const app = express();
@@ -11,7 +10,48 @@ const app = express();
 */
 
 app.get("/qa/questions", async (req, res) => {
+  const database = db;
+  const product = req.query.product_id;
+  const count = Number(req.query.count) || 5;
+  const productQs = await db.collection('questions').find({product_id: Number(product)}).limit(count).toArray();
+  const answers = await db.collection('answers').find({}).limit(count).toArray();
 
+  const mappedQs = productQs.map((q) => {
+
+    let answersObj = {};
+    answers.forEach(answer => {
+
+        let aID = answer.id;
+        answersObj[aID] = {}
+        answersObj[aID].id = answer.id,
+        answersObj[aID].body = answer.body,
+        answersObj[aID].date = answer.date_written,
+        answersObj[aID].answerer_name = answer.answerer_name,
+        answersObj[aID].helpfulness = answer.helpful,
+        answersObj[aID].photos = []
+
+    })
+
+    let report = false;
+    if (q.reported === '1'){report = true};
+
+    let result = {}
+
+      result.question_id = q.id,
+      result.question_body = q.body,
+      result.question_date = q.date_written,
+      result.asker_name = q.asker_name,
+      result.question_helpfulness = q.helpful,
+      result.reported = report,
+      result.answers = answersObj
+
+    return result;
+  })
+
+  res.status(200).send({
+    product_id: product,
+    results: mappedQs
+  })
 })
 
 app.post("/qa/questions", async (req, res) => {
@@ -83,12 +123,12 @@ app.put("/qa/questions/report", async (req, res) => {
 */
 app.get("/qa/answers", async (req, res) => {
   const database = db;
-  let count = 5;
-
+  let count = Number(req.query.count) || 5;
   let question = Number(req.query.question_id);
 
   const answerArray = await database.collection('answers').find({question_id: question}).limit(count).toArray();
-  const mapped = answerArray.map((a) => {
+
+  const mappedAnswers = answerArray.map((a) => {
     let result = {}
     result.answer_id = a.id;
     result.body = a.body;
@@ -103,7 +143,7 @@ app.get("/qa/answers", async (req, res) => {
     question: question,
     page: 0,
     count: count,
-    results: mapped
+    results: mappedAnswers
   })
 
 })
