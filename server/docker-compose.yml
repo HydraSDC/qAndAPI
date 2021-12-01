@@ -1,0 +1,19 @@
+version: "20.10.10"
+services:
+  node:
+    image: sdc-node
+    container_name: sdc-node
+    ports:
+      - 3000:1234
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+  mongo:
+    image: sdc-mongo
+    container_name: sdc-mongo
+    ports: -3001:27017
+    environment:
+      MONGO_INITDB_DATABASE: sdc
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
