@@ -16,4 +16,4 @@ services:
       MONGO_INITDB_DATABASE: sdc
     build:
       context: .
-      dockerfile: postgres.Dockerfile
+      dockerfile: mongo.Dockerfile
