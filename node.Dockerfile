@@ -1,8 +1,8 @@
 FROM node:14
 
-WORKDIR /qAndAPI
+WORKDIR /src
 
-COPY /server/app.js
+COPY server /src
 
 RUN npm install
 
